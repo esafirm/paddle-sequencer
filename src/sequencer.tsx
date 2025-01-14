@@ -3,6 +3,7 @@ import cx from 'classnames';
 import Synth from './Synth';
 
 import NOTES from './notes.json';
+import ToggleButton from './components/ToggleButton';
 
 interface Note {
   [key: string]: number;
@@ -77,10 +78,10 @@ export default function Sequencer() {
           .filter((x) => x);
 
         synthRef.current.playNotes(next, {
-          release,
-          bpm,
-          type,
-          delay,
+          type: type,
+          delay: delay,
+          bpm: bpm,
+          release: release,
         });
 
         return newStep;
@@ -129,18 +130,11 @@ export default function Sequencer() {
   return (
     <div className="bg-gray-800 rounded-lg p-4 inline-block">
       <div className="flex items-center space-x-4 mb-4 p-4">
-        <button
-          type="button"
-          className={cx('px-4 py-2 bg-gray-700 text-white rounded-md', {
-            'bg-blue-500': playing,
-          })}
-          onClick={() => {
-            if (playing) pause();
-            else play();
-          }}
-        >
-          Play
-        </button>
+        <ToggleButton
+          isActive={playing}
+          onClick={playing ? pause : play}
+          label="Play"
+        />
 
         <div className="relative">
           <span className="absolute -top-5 left-2 text-xs text-white opacity-30">
@@ -205,17 +199,13 @@ export default function Sequencer() {
           />
         </div>
 
-        <button
-          type="button"
-          className={cx('px-4 py-2 bg-gray-700 text-white rounded-md', {
-            'bg-blue-500': delay,
-          })}
+        <ToggleButton
+          isActive={delay}
           onClick={() => {
             setDelay(!delay);
           }}
-        >
-          Delay
-        </button>
+          label="Delay"
+        />
       </div>
 
       <div className="flex">
@@ -239,9 +229,9 @@ export default function Sequencer() {
                   className={cx(
                     'w-14 h-14 m-1 rounded cursor-pointer transition-colors duration-100',
                     {
-                      'bg-gray-600': groupIndex === currentStep,
                       'bg-blue-500': pad === 1,
                       'bg-gray-700 hover:bg-gray-600': pad === 0,
+                      'bg-gray-500': groupIndex === currentStep && pad !== 1,
                     }
                   )}
                   onClick={() => {
